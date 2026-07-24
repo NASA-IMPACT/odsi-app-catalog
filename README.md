@@ -60,3 +60,5 @@ public/videos/           # small committed demo clips (<=5 MB) + posters
 scripts/new-entry.mjs    # `npm run new-entry` scaffold
 netlify.toml             # build command + publish dir
 ```
+
+<!-- deploy-preview smoke test -->
