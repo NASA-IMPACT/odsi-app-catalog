@@ -1,0 +1,39 @@
+---
+title: URL Launcher
+description: "Per-screen URL bar launcher for macOS — type a URL, opens Chrome on the same screen."
+type: "Swift/macOS app"
+tags: ["macos", "swift", "appkit", "multi-monitor", "chrome", "launcher", "single-file"]
+limitations:
+  - "macOS only (Swift/AppKit) — no Windows or Linux support."
+  - "Hard-wired to open Google Chrome specifically, not the system default browser."
+  - "Requires building from source with the Swift toolchain — no signed/notarized release binary."
+repo: "https://github.com/kyle-lesinger/url-launcher"
+video:
+  provider: local
+  src: "/videos/url-launcher.mp4"
+  poster: "/videos/url-launcher.jpg"
+author: "Kyle Lesinger"
+dateAdded: 2026-07-24
+featured: true
+---
+
+## What it does
+
+Shows a URL bar on whichever display you invoke it from. Type a URL and it opens
+Chrome on that **same** screen — handy on multi-monitor setups where new browser
+windows otherwise land on the wrong display.
+
+## Install & run
+
+```bash
+git clone https://github.com/kyle-lesinger/url-launcher
+cd url-launcher
+swift run
+```
+
+Single-file Swift/AppKit tool — no dependencies beyond the macOS SDK.
+
+## When to reach for it
+
+- Multi-monitor workflows where you want the browser to open where you're looking.
+- A fast keyboard-driven "open this link here" without dragging windows around.

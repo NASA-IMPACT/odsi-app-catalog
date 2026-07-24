@@ -1,0 +1,153 @@
+---
+interface VideoData {
+  provider: 'local' | 'youtube' | 'vimeo';
+  src: string;
+  poster?: string;
+}
+interface Props {
+  video: VideoData;
+  title: string;
+}
+const { video, title } = Astro.props;
+
+// Entries seeded before a real demo exists carry a placeholder id.
+const isPlaceholder = /^REPLACE_WITH_/i.test(video.src);
+
+const embedSrc =
+  video.provider === 'youtube'
+    ? `https://www.youtube-nocookie.com/embed/${video.src}?autoplay=1`
+    : video.provider === 'vimeo'
+      ? `https://player.vimeo.com/video/${video.src}?autoplay=1`
+      : '';
+
+// Poster: explicit poster, else the provider thumbnail, else none.
+const poster =
+  video.poster ??
+  (video.provider === 'youtube'
+    ? `https://i.ytimg.com/vi/${video.src}/hqdefault.jpg`
+    : undefined);
+---
+
+{
+  isPlaceholder ? (
+    <div class="video video--pending" role="note">
+      <span class="video__pending-icon">▶</span>
+      <p>Demo video coming soon.</p>
+    </div>
+  ) : video.provider === 'local' ? (
+    <video
+      class="video"
+      controls
+      muted
+      playsinline
+      preload="none"
+      poster={video.poster}
+    >
+      <source src={video.src} type="video/mp4" />
+      Your browser doesn&rsquo;t support embedded video.
+    </video>
+  ) : (
+    <div class="video video--facade" data-embed={embedSrc} data-title={title}>
+      {poster && <img src={poster} alt="" loading="lazy" class="video__poster" />}
+      <button type="button" class="video__play" aria-label={`Play demo of ${title}`}>
+        <span class="video__play-icon">▶</span>
+        <span class="video__play-label">Play demo</span>
+      </button>
+    </div>
+  )
+}
+
+<style>
+  .video {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+    overflow: hidden;
+    background: #0e0d0b;
+  }
+  .video--pending {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: var(--ink-3);
+    background: var(--paper-2);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+  }
+  .video__pending-icon {
+    font-size: 1.4rem;
+    opacity: 0.5;
+  }
+  .video--pending p {
+    margin: 0;
+  }
+  .video--facade {
+    position: relative;
+    cursor: pointer;
+  }
+  .video__poster {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .video__play {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border: 0;
+    background: rgba(14, 13, 11, 0.28);
+    color: #fff;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  .video__play:hover {
+    background: rgba(14, 13, 11, 0.12);
+  }
+  .video__play-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: var(--accent);
+    font-size: 1rem;
+    padding-left: 3px;
+  }
+  .video iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+</style>
+
+<script>
+  // Click-to-load: swap the poster for the real iframe only on user intent,
+  // so no third-party player JS loads until the visitor asks for it.
+  document.addEventListener('click', (e) => {
+    const target = e.target as HTMLElement;
+    const facade = target.closest<HTMLElement>('.video--facade');
+    if (!facade) return;
+    const src = facade.dataset.embed;
+    if (!src) return;
+    const iframe = document.createElement('iframe');
+    iframe.setAttribute('src', src);
+    iframe.setAttribute(
+      'allow',
+      'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
+    );
+    iframe.setAttribute('allowfullscreen', '');
+    iframe.setAttribute('title', facade.dataset.title ?? 'Demo video');
+    facade.replaceChildren(iframe);
+  });
+</script>

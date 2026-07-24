@@ -1,0 +1,29 @@
+---
+import type { EntryType } from '../content.config';
+
+interface Props {
+  type: EntryType;
+}
+const { type } = Astro.props;
+
+// One stable hue per type. Badge derives a soft bg, a mid border, dark text.
+const HUES: Record<EntryType, number> = {
+  'GitHub Action': 258, // violet
+  'Swift/macOS app': 24, // orange
+  'Claude skill': 168, // teal
+  CLI: 210, // blue
+  'Web app': 330, // magenta
+  Python: 45, // gold
+  Library: 140, // green
+  Reference: 0, // neutral-ish red
+};
+const h = HUES[type] ?? 220;
+const style = [
+  `--tb-bg:hsl(${h} 55% 94%)`,
+  `--tb-line:hsl(${h} 40% 78%)`,
+  `--tb-ink:hsl(${h} 55% 30%)`,
+  `--tb-dot:hsl(${h} 60% 45%)`,
+].join(';');
+---
+
+<span class="type-badge" style={style}>{type}</span>

@@ -1,0 +1,21 @@
+name: build
+
+# Validates every PR: `astro build` fails on any bad frontmatter — an unknown
+# `type`, a malformed `repo` URL, or an empty/missing `limitations` list (the
+# ">=1 acknowledged limitation" rule). Pagefind then indexes the output.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run build

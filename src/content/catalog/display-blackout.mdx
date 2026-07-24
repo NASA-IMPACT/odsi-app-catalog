@@ -1,0 +1,39 @@
+---
+title: Display Blackout
+description: "Terminal multi-display focus tool: press 1/2/3 to keep one screen and black out the rest (macOS)."
+type: "Swift/macOS app"
+tags: ["macos", "swift", "appkit", "multi-monitor", "focus", "single-file"]
+limitations:
+  - "macOS only (Swift/AppKit) — no Windows or Linux support."
+  - "Hard-coded to the 1/2/3 keys, so setups with more than 3 displays aren't fully addressable."
+  - "Requires building from source with the Swift toolchain — no signed/notarized release binary."
+repo: "https://github.com/kyle-lesinger/display-blackout"
+video:
+  provider: local
+  src: "/videos/display-blackout.mp4"
+  poster: "/videos/display-blackout.jpg"
+author: "Kyle Lesinger"
+dateAdded: 2026-07-24
+featured: true
+---
+
+## What it does
+
+Blacks out every display except the one you choose, so a single screen stays lit
+while you focus. Launch it from the terminal, then press **1**, **2**, or **3** to
+pick the screen to keep — the rest go dark until you dismiss it.
+
+## Install & run
+
+```bash
+git clone https://github.com/kyle-lesinger/display-blackout
+cd display-blackout
+swift run
+```
+
+Single-file Swift/AppKit tool — no dependencies beyond the macOS SDK.
+
+## When to reach for it
+
+- Screen-sharing or recording one monitor and want the others out of frame.
+- Killing visual distractions on secondary displays during deep work.

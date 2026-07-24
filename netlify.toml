@@ -1,0 +1,27 @@
+# Static Astro deploy. `npm run build` runs `astro build` then the `postbuild`
+# hook `pagefind --site dist`, so the search index lands in dist/pagefind/
+# before Netlify uploads. No adapter — this is a pure static site.
+#
+# Continuous deployment (set up when the repo is linked in Netlify):
+#   • Production branch = main            → production deploys
+#   • Pull requests                       → Deploy Previews (unique preview URL per PR)
+#   • Other branches                      → branch deploys
+# The build command below is used for all three contexts.
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Explicit per-context config (same build everywhere). Netlify injects URL /
+# DEPLOY_PRIME_URL per context, which astro.config.mjs reads for canonical URLs.
+[context.production]
+  command = "npm run build"
+
+[context.deploy-preview]
+  command = "npm run build"
+
+[context.branch-deploy]
+  command = "npm run build"

@@ -1,0 +1,297 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import EntryCard from './EntryCard.astro';
+
+interface Props {
+  entries: CollectionEntry<'catalog'>[];
+}
+const { entries } = Astro.props;
+
+// Types present in the catalog (preserve a stable, sensible order via count).
+const typeCounts = new Map<string, number>();
+for (const e of entries) typeCounts.set(e.data.type, (typeCounts.get(e.data.type) ?? 0) + 1);
+const types = [...typeCounts.keys()].sort();
+
+// Tags present, most common first.
+const tagCounts = new Map<string, number>();
+for (const e of entries) for (const t of e.data.tags) tagCounts.set(t, (tagCounts.get(t) ?? 0) + 1);
+const tags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+---
+
+<section class="catalog" aria-label="App catalog">
+  <div class="controls">
+    <div class="search">
+      <span class="search__icon" aria-hidden="true">⌕</span>
+      <input
+        id="q"
+        type="search"
+        class="search__input"
+        placeholder="Search apps, skills & references…"
+        autocomplete="off"
+        aria-label="Search catalog"
+      />
+    </div>
+
+    <div class="facets">
+      <div class="facet" role="group" aria-label="Filter by type">
+        <span class="facet__label">Type</span>
+        {
+          types.map((t) => (
+            <button type="button" class="chip" data-facet="type" data-value={t}>
+              {t}
+            </button>
+          ))
+        }
+      </div>
+      {
+        tags.length > 0 && (
+          <div class="facet" role="group" aria-label="Filter by tag">
+            <span class="facet__label">Tag</span>
+            {tags.map(([t]) => (
+              <button type="button" class="chip chip--tag" data-facet="tag" data-value={t}>
+                #{t}
+              </button>
+            ))}
+          </div>
+        )
+      }
+    </div>
+
+    <div class="statusbar">
+      <span id="count" class="statusbar__count" aria-live="polite"
+        >{entries.length} entries</span
+      >
+      <button type="button" id="clear" class="statusbar__clear" hidden>Clear filters</button>
+    </div>
+  </div>
+
+  <div id="grid" class="grid">
+    {entries.map((entry) => <EntryCard entry={entry} />)}
+  </div>
+
+  <p id="empty" class="empty" hidden>
+    No entries match. Try a different search or clear the filters.
+  </p>
+</section>
+
+<style>
+  .catalog {
+    padding: 24px 0 8px;
+  }
+  .controls {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 22px;
+  }
+  .search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--paper-2);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 0 14px;
+    box-shadow: var(--shadow);
+  }
+  .search:focus-within {
+    border-color: var(--focus);
+  }
+  .search__icon {
+    font-size: 1.2rem;
+    color: var(--ink-3);
+  }
+  .search__input {
+    flex: 1;
+    border: 0;
+    background: transparent;
+    padding: 14px 0;
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    color: var(--ink);
+  }
+  .search__input:focus {
+    outline: none;
+  }
+  .facets {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .facet {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+  }
+  .facet__label {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-3);
+    margin-right: 4px;
+    min-width: 34px;
+  }
+  .chip {
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    color: var(--ink-2);
+    background: var(--paper-2);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 4px 11px;
+    cursor: pointer;
+    transition:
+      background 0.12s ease,
+      color 0.12s ease,
+      border-color 0.12s ease;
+  }
+  .chip:hover {
+    border-color: var(--ink-3);
+  }
+  .chip[aria-pressed='true'] {
+    background: var(--ink);
+    color: var(--paper-2);
+    border-color: var(--ink);
+  }
+  .chip--tag[aria-pressed='true'] {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+  .statusbar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--ink-3);
+  }
+  .statusbar__clear {
+    border: 0;
+    background: none;
+    color: var(--accent-ink);
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    text-decoration: underline;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 18px;
+  }
+  .empty {
+    text-align: center;
+    color: var(--ink-3);
+    font-family: var(--font-mono);
+    padding: 48px 0;
+  }
+  [data-entry].is-hidden {
+    display: none;
+  }
+</style>
+
+<script>
+  type Card = HTMLElement;
+
+  const grid = document.getElementById('grid')!;
+  const cards = Array.from(grid.querySelectorAll<Card>('[data-entry]'));
+  const input = document.getElementById('q') as HTMLInputElement;
+  const countEl = document.getElementById('count')!;
+  const emptyEl = document.getElementById('empty')!;
+  const clearBtn = document.getElementById('clear') as HTMLButtonElement;
+  const chips = Array.from(document.querySelectorAll<HTMLButtonElement>('.chip'));
+
+  const activeTypes = new Set<string>();
+  const activeTags = new Set<string>();
+  let query = '';
+
+  // --- Pagefind (full-text over rendered docs). Loaded lazily; only present
+  // after a production build (`npm run build`). In `astro dev` it won't exist,
+  // so free-text falls back to a substring match on the card text. ---
+  let pagefindPromise: Promise<any> | null = null;
+  function getPagefind(): Promise<any> {
+    if (!pagefindPromise) {
+      const path = '/pagefind/' + 'pagefind.js'; // built as a variable so Vite won't try to resolve it
+      pagefindPromise = import(/* @vite-ignore */ path)
+        .then(async (pf) => {
+          await pf.options?.({ excerptLength: 15 });
+          return pf;
+        })
+        .catch(() => null);
+    }
+    return pagefindPromise;
+  }
+
+  function slugFromUrl(url: string): string {
+    return url.split('#')[0].split('?')[0].split('/').filter(Boolean).pop() ?? '';
+  }
+
+  async function textMatches(): Promise<Set<string> | null> {
+    if (!query) return null; // null => "everything matches the text criterion"
+    const pf = await getPagefind();
+    if (pf) {
+      const search = await pf.search(query);
+      const data = await Promise.all(search.results.map((r: any) => r.data()));
+      return new Set(data.map((d: any) => slugFromUrl(d.url)));
+    }
+    // Fallback (dev / index missing): substring over title+desc+tags.
+    const q = query.toLowerCase();
+    return new Set(
+      cards.filter((c) => (c.dataset.text ?? '').includes(q)).map((c) => c.dataset.slug ?? '')
+    );
+  }
+
+  let token = 0;
+  async function apply() {
+    const mine = ++token;
+    const textSet = await textMatches();
+    if (mine !== token) return; // a newer keystroke superseded this run
+
+    let shown = 0;
+    for (const card of cards) {
+      const type = card.dataset.type ?? '';
+      const cardTags = (card.dataset.tags ?? '').split(' ').filter(Boolean);
+      const okText = textSet === null || textSet.has(card.dataset.slug ?? '');
+      const okType = activeTypes.size === 0 || activeTypes.has(type);
+      const okTag = activeTags.size === 0 || cardTags.some((t) => activeTags.has(t));
+      const visible = okText && okType && okTag;
+      card.classList.toggle('is-hidden', !visible);
+      if (visible) shown++;
+    }
+
+    countEl.textContent = `${shown} of ${cards.length} ${cards.length === 1 ? 'entry' : 'entries'}`;
+    emptyEl.hidden = shown !== 0;
+    const filtering = query !== '' || activeTypes.size > 0 || activeTags.size > 0;
+    clearBtn.hidden = !filtering;
+  }
+
+  let debounce: number | undefined;
+  input.addEventListener('input', () => {
+    window.clearTimeout(debounce);
+    query = input.value.trim();
+    debounce = window.setTimeout(apply, 120);
+  });
+
+  for (const chip of chips) {
+    chip.setAttribute('aria-pressed', 'false');
+    chip.addEventListener('click', () => {
+      const value = chip.dataset.value!;
+      const set = chip.dataset.facet === 'type' ? activeTypes : activeTags;
+      const now = !(chip.getAttribute('aria-pressed') === 'true');
+      chip.setAttribute('aria-pressed', String(now));
+      now ? set.add(value) : set.delete(value);
+      apply();
+    });
+  }
+
+  clearBtn.addEventListener('click', () => {
+    query = '';
+    input.value = '';
+    activeTypes.clear();
+    activeTags.clear();
+    for (const chip of chips) chip.setAttribute('aria-pressed', 'false');
+    apply();
+  });
+</script>

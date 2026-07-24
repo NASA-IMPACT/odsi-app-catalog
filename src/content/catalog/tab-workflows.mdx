@@ -1,0 +1,40 @@
+---
+title: Tab Workflows
+description: "Open a named set of browser tabs across multiple monitors with one command (macOS + zsh)."
+type: "CLI"
+tags: ["macos", "zsh", "shell", "multi-monitor", "browser-tabs", "workflow", "automation"]
+limitations:
+  - "macOS + zsh only — relies on AppleScript/System Events to place windows and tabs."
+  - "Needs Accessibility/Automation permissions granted to the terminal, or tab placement fails silently."
+  - "Tab sets are defined in your shell config, so non-technical users must edit dotfiles to add workspaces."
+repo: "https://github.com/kyle-lesinger/tab-workflows"
+video:
+  provider: local
+  src: "/videos/tab-workflows.mp4"
+  poster: "/videos/tab-workflows.jpg"
+author: "Kyle Lesinger"
+dateAdded: 2026-07-24
+featured: false
+---
+
+## What it does
+
+Defines named "workspaces" — sets of browser tabs laid out across multiple
+monitors — that you open with a single command. It's the personal `pm` workspace
+launcher, generalized so anyone can declare their own tab sets.
+
+## Install & run
+
+```bash
+git clone https://github.com/kyle-lesinger/tab-workflows
+# source the script from your ~/.zshrc, then:
+tabflow <workspace-name>
+```
+
+See the repo README for defining workspaces and granting the required macOS
+Automation permissions.
+
+## When to reach for it
+
+- Spinning up the same multi-monitor browser layout at the start of every workday.
+- Context-switching between projects, each with its own set of tabs/dashboards.

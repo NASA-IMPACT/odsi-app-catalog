@@ -1,0 +1,27 @@
+# build output
+dist/
+.astro/
+
+# dependencies
+node_modules/
+
+# generated pagefind index (rebuilt on every build)
+public/pagefind/
+
+# env & logs
+.env
+.env.production
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# macOS
+.DS_Store
+
+# editor
+.vscode/
+.idea/
+
+# local screenshot / mcp scratch
+.playwright-tmp/
+.playwright-mcp/
