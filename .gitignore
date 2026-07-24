@@ -25,3 +25,6 @@ yarn-error.log*
 # local screenshot / mcp scratch
 .playwright-tmp/
 .playwright-mcp/
+
+# Local Netlify folder
+.netlify

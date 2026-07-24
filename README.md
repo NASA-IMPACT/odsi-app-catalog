@@ -1,5 +1,7 @@
 # odsi-app-catalog
 
+**Live:** https://odsi-app-catalog.netlify.app · deploys from `main`, with a Deploy Preview per PR.
+
 A single, searchable front door to apps, skills, and reference tools built across
 **NASA ODSI**. The catalog does **not** host or copy the tools — every entry links
 out to the real GitHub repo. Search by name, filter by type or tag, watch a demo,
