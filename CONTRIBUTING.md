@@ -26,6 +26,9 @@ limitations:                               # REQUIRED — at least one (see belo
   - "macOS only; no Windows/Linux."
 repo: "https://github.com/org/name"        # required — the real source repo
 homepage: "https://example.com"            # optional
+devSuggestion:                             # optional — a "make it yours" tip
+  text: "Wrap it in a shell alias and fork it to point at your own links."
+  alias: "alias foo='…'"                    # optional shell-alias snippet
 video:                                     # optional demo
   provider: youtube                        # youtube | vimeo | local
   src: "YOUTUBE_ID"                         # id, or "/videos/clip.mp4" for local

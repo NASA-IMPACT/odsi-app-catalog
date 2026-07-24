@@ -58,6 +58,13 @@ try {
   const tagsRaw = await ask('Tags (comma-separated): ', { required: false });
   const author = (await ask('Author (blank = NASA ODSI): ', { required: false })) || 'NASA ODSI';
 
+  const devText = await ask("Developer's suggestion (optional, blank to skip): ", {
+    required: false,
+  });
+  const devAlias = devText
+    ? await ask('  alias snippet (optional, e.g. alias foo=\'…\'): ', { required: false })
+    : '';
+
   // Require at least one limitation.
   const limitations = [];
   stdout.write('Limitations / risks — at least one is required. Blank line to finish.\n');
@@ -91,6 +98,9 @@ try {
     ...limitations.map((l) => `  - ${yaml(l)}`),
     `repo: ${yaml(repo)}`,
     ...(homepage ? [`homepage: ${yaml(homepage)}`] : []),
+    ...(devText
+      ? ['devSuggestion:', `  text: ${yaml(devText)}`, ...(devAlias ? [`  alias: ${yaml(devAlias)}`] : [])]
+      : []),
     '# Optional demo video — uncomment one:',
     '# video:',
     '#   provider: youtube   # youtube | vimeo | local',

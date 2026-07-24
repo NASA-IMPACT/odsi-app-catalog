@@ -32,6 +32,15 @@ const catalog = defineCollection({
     repo: z.string().url(), // GitHub repo (required)
     homepage: z.string().url().optional(), // live site / docs, if any
 
+    // Optional "Developer's suggestion" — a tip on how to make the tool your
+    // own, with an optional shell-alias snippet to run it from your terminal.
+    devSuggestion: z
+      .object({
+        text: z.string(),
+        alias: z.string().optional(),
+      })
+      .optional(),
+
     // Optional demo video: EITHER a committed local clip under /public/videos
     // (keep <= ~5 MB), OR an external YouTube/Vimeo id.
     video: z

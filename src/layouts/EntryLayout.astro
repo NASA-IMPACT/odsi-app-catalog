@@ -9,8 +9,19 @@ interface Props {
   entry: CollectionEntry<'catalog'>;
 }
 const { entry } = Astro.props;
-const { title, description, type, tags, limitations, repo, homepage, video, author, dateAdded } =
-  entry.data;
+const {
+  title,
+  description,
+  type,
+  tags,
+  limitations,
+  repo,
+  homepage,
+  video,
+  devSuggestion,
+  author,
+  dateAdded,
+} = entry.data;
 const dateStr = dateAdded.toISOString().slice(0, 10);
 ---
 
@@ -62,6 +73,18 @@ const dateStr = dateAdded.toISOString().slice(0, 10);
     <article class="prose">
       <slot />
     </article>
+
+    {
+      devSuggestion && (
+        <section class="tip" aria-labelledby="tip-h">
+          <h2 id="tip-h" class="tip__title">🛠 Developer&rsquo;s suggestion</h2>
+          <p class="tip__text">{devSuggestion.text}</p>
+          {devSuggestion.alias && (
+            <pre class="tip__alias"><code>{devSuggestion.alias}</code></pre>
+          )}
+        </section>
+      )
+    }
   </main>
 </BaseLayout>
 
@@ -154,6 +177,34 @@ const dateStr = dateAdded.toISOString().slice(0, 10);
     flex-direction: column;
     gap: 6px;
     color: var(--ink);
+  }
+
+  /* developer's suggestion (tip) */
+  .tip {
+    margin: 26px 0;
+    background: #e8f1ef;
+    border: 1px solid #a9cfc9;
+    border-left: 4px solid var(--focus);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+  }
+  .tip__title {
+    margin: 0 0 8px;
+    font-size: 1.1rem;
+    color: #1f5a54;
+  }
+  .tip__text {
+    margin: 0;
+    color: var(--ink);
+  }
+  .tip__alias {
+    margin: 12px 0 0;
+    background: #14130f;
+    color: #f4f1ea;
+    padding: 12px 14px;
+    border-radius: var(--radius);
+    overflow-x: auto;
+    font-size: 0.84rem;
   }
 
   /* docs body */
