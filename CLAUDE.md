@@ -57,12 +57,11 @@ npm run new-entry # interactive scaffold for a new catalog entry
 ## Deploy (Netlify)
 
 - Site `odsi-app-catalog`, built from `main`, `command = npm run build`, `publish = dist`.
-- **main → production auto-deploy works** via a Netlify build hook + a GitHub `push` webhook
-  (interim mechanism). The site's git clone uses a read-only **deploy key** on the repo.
-- **PR Deploy Previews are NOT yet enabled.** They require the site's git connection to be made
-  through the **Netlify GitHub App** (a one-time action in the Netlify UI: Project →
-  Build & deploy → link/manage repository). After connecting via the App, remove the interim
-  `github-push-main` webhook + deploy key to avoid duplicate builds. See `docs/DECISIONS.md`.
+- **Connected via the Netlify GitHub App** (`installation_id` set — not a deploy key).
+- **main → production** auto-deploys on push/merge.
+- **PR Deploy Previews work** — every PR against `main` gets its own
+  `deploy-preview-N--odsi-app-catalog.netlify.app` URL + a `netlify/…/deploy-preview` status check.
+- See `docs/DECISIONS.md §7` for how this is wired (and the interim setup that was removed).
 
 ## Conventions
 

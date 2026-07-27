@@ -31,19 +31,20 @@ screen recordings. No Git LFS (finicky on Netlify).
 No `NASA-ODSI` GitHub org exists / is accessible. ODSI is treated as the program inside the
 `NASA-IMPACT` org. Visible text says "NASA ODSI"; repo URLs stay `NASA-IMPACT`.
 
-## 7. Netlify continuous deployment — current state (interim)
-- Site `odsi-app-catalog` created via the Netlify API and linked to the repo.
-- Git clone works via a **read-only deploy key** on the repo.
-- **main → production auto-deploy works** via a Netlify **build hook** + a GitHub **push
-  webhook** (`github-push-main`).
-- **PR Deploy Previews are NOT enabled.** A deploy-key/API git connection cannot produce
-  per-PR previews — that requires the site's git connection to be made through the **Netlify
-  GitHub App**.
+## 7. Netlify continuous deployment
+- Site `odsi-app-catalog` (id `f94a3639-b96b-4119-b636-81af1b8e57b0`), connected to the repo via
+  the **Netlify GitHub App** (`installation_id: 26968263`).
+- **main → production**: auto-deploys on push/merge.
+- **PR Deploy Previews**: enabled and verified — each PR against `main` builds a
+  `deploy-preview-N--odsi-app-catalog.netlify.app` and posts a `netlify/…/deploy-preview` commit
+  status check.
+- Build: `npm run build` → publish `dist` (from `netlify.toml`). `astro.config.mjs` derives `site`
+  from Netlify env (`DEPLOY_PRIME_URL || URL`), so preview/prod canonical URLs are correct.
 
-### To finish (one-time, Netlify UI)
-1. Netlify → Project `odsi-app-catalog` → **Build & deploy → Continuous deployment** →
-   link/manage the repository via the **GitHub App**.
-2. This enables main deploys **and** PR Deploy Previews natively (with commit statuses).
-3. Then remove the now-redundant interim pieces to avoid duplicate builds:
-   - Delete the GitHub `push` webhook pointing at `api.netlify.com/build_hooks/...`.
-   - Optionally delete the Netlify build hook and the repo deploy key ("Netlify deploy key").
+### History (resolved — don't recreate these)
+The site was first created via the Netlify API with a **read-only deploy key** + a build hook + a
+GitHub `push` webhook. main deploys worked, but PR previews did **not** — a deploy-key/API
+connection can't produce them. It was then re-linked through the **GitHub App** in the Netlify UI,
+and the interim deploy key, build hook, and push webhook were deleted to avoid duplicate builds.
+If you ever see a `github-push-main` webhook or a "Netlify deploy key" reappear alongside the App
+connection, delete it.
