@@ -1,0 +1,65 @@
+---
+title: Chrome Tab Merger
+description: "Merges every scattered Chrome window into the one nearest the middle of your displays — losslessly, so nothing reloads."
+type: "Browser extension"
+tags: ["chrome", "chrome-extension", "manifest-v3", "tabs", "tab-management", "multi-monitor", "productivity"]
+limitations:
+  - "Chrome/Chromium only — the tab-move APIs it relies on don't exist in Firefox or Safari."
+  - "Not on the Chrome Web Store: it must be loaded unpacked with Developer mode, once per Chrome profile. Some managed/MDM machines disable Developer mode entirely, which blocks installation."
+  - "Chrome loads it live from the cloned folder — moving or deleting that folder breaks the extension and resets its keyboard shortcut and toolbar pin, because an unpacked extension's id is derived from its path."
+  - "Skips incognito windows, and PWA/app, popup and DevTools windows: Chrome forbids moving tabs across the incognito boundary or into any window that isn't a normal browser window."
+  - "The merge is not undoable with Cmd+Z. Nothing is closed or reloaded, but reversing it means dragging tabs back out by hand."
+  - "Ships no icon file, so Chrome renders a plain default monogram button in the toolbar."
+repo: "https://github.com/kyle-lesinger/chrome-tab-merger"
+devSuggestion:
+  text: "Make it yours: the target window is chosen by distance from the centre of your display arrangement, in a single pickTarget() function in background.js. Swap the scoring line to prefer the window with the most tabs, or the one on your primary display, and it becomes a different tool for a two-line change."
+author: "Kyle Lesinger"
+dateAdded: 2026-08-20
+featured: false
+---
+
+## What it does
+
+Chrome has no "Merge All Windows" — Safari does, Chrome only offers a per-tab
+*Move Tab to Another Window* context menu. When your tabs are strewn across half a
+dozen windows on three monitors, this collapses them into one window in a single
+keystroke, after showing you exactly what it's about to do.
+
+The window it merges *into* is the one physically nearest the centre of your
+display arrangement.
+
+## Why it's an extension and not a menu-bar app
+
+Chrome's AppleScript dictionary gives the `tab` class only `close`, `reload`,
+`execute` and friends — there is no `move`. An external macOS app therefore can't
+move a tab at all; it can only read the URL, open a new tab elsewhere, and close
+the original. That silently destroys back/forward history, scroll position and
+half-typed form input, unpins pinned tabs, dissolves tab groups, and forces every
+tab to reload at once.
+
+`chrome.tabs.move()` relocates the *live* tab, and that's only reachable from
+inside the browser. So: extension.
+
+## Install
+
+```bash
+git clone https://github.com/kyle-lesinger/chrome-tab-merger
+```
+
+Then `chrome://extensions` → **Developer mode** → **Load unpacked** → pick the
+folder. Pin the toolbar button, and confirm the ⌘⇧K shortcut at
+`chrome://extensions/shortcuts` — Chrome ignores a suggested shortcut until it has
+been seen on that page. Repeat per Chrome profile.
+
+## When to reach for it
+
+- Multi-monitor setups where windows accumulate on displays you aren't looking at.
+- Before screen-sharing, when you want one tidy window instead of nine.
+- Any time you'd otherwise drag tabs between windows one at a time.
+
+## Notable detail
+
+It asks for only `tabGroups` and `system.display` — deliberately **not** the `tabs`
+permission, which moving tabs doesn't require. The practical consequence is that
+the extension cannot read the URL or title of any tab; it counts and moves them
+blind.
