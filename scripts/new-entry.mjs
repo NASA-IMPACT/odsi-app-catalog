@@ -20,6 +20,7 @@ const ENTRY_TYPES = [
   'Web app',
   'Python',
   'Library',
+  'Browser extension',
   'Reference',
 ];
 
